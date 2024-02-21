@@ -10,3 +10,5 @@ The goal is the algorithm which has to compute the heart rate
 and respiration rate. The validation of the code was performed 
 by recording signal with different (controlled) respiration rates 
 and the use of a finger oximeter for the groud truth of the heart rate.
+
+@author Iodice Michele Attilio
