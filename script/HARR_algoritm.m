@@ -1,15 +1,15 @@
 % Load the CSV file
-file_path = 'C:/Users/39392/Desktop/University/MAGISTRALE/biomedical_signal_processing/projects/dataset/data4.csv';
+file_path = 'C:/Users/39392/Documents/GitHub/Biomedical_signal_procesing_exam/dataset/data4.csv';
 
-% Load data using readtable
+% Load data 
 data_table = readtable(file_path);
 
-% Extract accelerometer data along x, y, and z axes
+% estraggo i dati sui tre assi x, y, e z
 acc_x = data_table.X;
 acc_y = data_table.Y;
 acc_z = data_table.Z;
 
-% Use timestamps for the x-axis
+% timestamps
 timestamps = data_table.TIME; % Assuming the column name is 'timestamp'
 
 % Parametri
