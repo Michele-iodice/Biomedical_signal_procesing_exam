@@ -4,31 +4,30 @@ file_path = 'C:/Users/39392/Documents/GitHub/Biomedical_signal_procesing_exam/da
 % Load data 
 data_table = readtable(file_path);
 
-% estraggo i dati sui tre assi x, y, e z
+% extract data on the three axis x, y, and z and relative timestamps
 acc_x = data_table.X;
 acc_y = data_table.Y;
 acc_z = data_table.Z;
 
-% timestamps
 timestamps = data_table.TIME; % Assuming the column name is 'timestamp'
 
-% Parametri
-fs = 1 / (mean(diff(timestamps))); % Frequenza di campionamento (Hz)
-duration = 16; % durata del segnale in secondi
-n = length(acc_z); %lunghezza del segnale in numero di campioni
-f_cutoff_resp = 2; % Frequenza di taglio del filtro passa-basso per il tasso respiratorio (Hz)
-f_cutoff_heart_low = 0.1; % Frequenza di taglio inferiore del filtro passa-banda per il tasso cardiaco (Hz)
-f_cutoff_heart_high = 10; % Frequenza di taglio superiore del filtro passa-banda per il tasso cardiaco (Hz)
+% Parameter
+fs = 1 / (mean(diff(timestamps))); % Sampling rate (Hz)
+duration = 16; % signal duration in seconds
+n = length(acc_z); % signal lenght in number of samples
+f_cutoff_resp = 2; % Cut-off frequency of the low-pass filter for respiratory rate (Hz)
+f_cutoff_heart_low = 0.1; % Lower cut-off frequency of the bandpass filter for heart rate (Hz)
+f_cutoff_heart_high = 10; % Upper cut-off frequency of bandpass filter for heart rate (Hz)
 
-% Filtraggio dei dati
-[b_low, a_low] = butter(2, f_cutoff_resp / (fs/2), 'low'); % Coefficienti del filtro passa-basso
-resp_filtered = filtfilt(b_low, a_low, acc_z); % Applicazione del filtro passa-basso
+% Data filtering
+[b_low, a_low] = butter(2, f_cutoff_resp / (fs/2), 'low'); % Low pass filter coefficients
+resp_filtered = filtfilt(b_low, a_low, acc_z); 
 
-[b_band, a_band] = butter(2, [f_cutoff_heart_low, f_cutoff_heart_high] / (fs/2), 'bandpass'); % Coefficienti del filtro passa-banda
-heart_filtered = filtfilt(b_band, a_band, acc_x); % Applicazione del filtro passa-banda
+[b_band, a_band] = butter(2, [f_cutoff_heart_low, f_cutoff_heart_high] / (fs/2), 'bandpass'); % Coefficients of the bandpass filter
+heart_filtered = filtfilt(b_band, a_band, acc_x);
 
 
-% Calcola la Trasformata di Fourier
+% Fourier transform
 frequencies = linspace(0, fs/2, n/2+1);
 resp_fourier_transform = fft(resp_filtered) / n;
 resp_amplitude_spectrum = abs(resp_fourier_transform(1:n/2+1));
@@ -36,20 +35,18 @@ heart_fourier_transform = fft(heart_filtered) / n;
 heart_amplitude_spectrum = abs(heart_fourier_transform(1:n/2+1));
 
 
-% Individuazione dei picchi respiratori
+% Repsiratory peaks detection
 [resp_peaks, locs_peaks] = findpeaks(resp_amplitude_spectrum);
 
 
 
-% Individuazione dei picchi cardiaci
+% Cardiac peaks detection
 [heart_peaks, locs_peaks_hearth] = findpeaks(heart_amplitude_spectrum);
 
-% Calcola l'hearth rate in Hz
+% heart and respiratory rate
 resp_periods = length(resp_peaks) / duration;
 resp_rate = resp_periods * 60/duration;
 
-
-% Calcola l'hearth rate in Hz
 heart_period = length(heart_peaks) / duration;
 heart_rate = heart_period * 60/duration;
 
